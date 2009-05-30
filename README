@@ -1,14 +1,10 @@
-Here you'll find a set of scripts and Chef recipes for setting up Asterisk on Ubuntu.
+Here you'll find a set of scripts and Chef recipes for setting up Asterisk on Ubuntu on EC2.
 
-If you're running on EC2, start here. Otherwise, skip to step N.
-
-EC2 bootstrap
------------
 We're assuming you have setup your local EC2 command line tools or use the AWS Console.
 
 1. Start an instance of Ubuntu 9.04 (Jaunty)
 
-ec2-run-instances
+ec2-run-instances....
 
 2. Login as root and check out this repo (or fork your own and use that)
 
