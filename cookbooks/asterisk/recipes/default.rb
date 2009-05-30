@@ -14,6 +14,8 @@ end
 template "/etc/asterisk/sip.conf" do
   source "sip.conf.erb"
   notifies :reload, resources(:service => "asterisk")
+  external_ip = node[:ec2] ? node[:ec2][:public_ipv4] : node[:ipaddress]
+  variables (:external_ip => external_ip)
 end
 
 template "/etc/asterisk/extensions.conf" do

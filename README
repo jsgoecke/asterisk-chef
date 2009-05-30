@@ -1,0 +1,32 @@
+Here you'll find a set of scripts and Chef recipes for setting up Asterisk on Ubuntu.
+
+If you're running on EC2, start here. Otherwise, skip to step N.
+
+EC2 bootstrap
+-----------
+We're assuming you have setup your local EC2 command line tools or use the AWS Console.
+
+1. Start an instance of Ubuntu 9.04 (Jaunty)
+
+ec2-run-instances
+
+2. Login as root and check out this repo (or fork your own and use that)
+
+# apt-get update
+# apt-get install git-core
+# git clone git://github.com/jsierles/asterisk-chef.git
+
+3. Run a script to setup Chef
+
+# cd asterisk-chef
+# scripts/ec2_chef.sh
+
+4. Install the chef recipes
+
+# rake install
+
+5. Run the example Chef config file to see Chef in action
+
+# chef-solo -j config/example.json
+
+6. Edit example.json to your tastes and re-run #5 to see results
