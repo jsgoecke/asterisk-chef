@@ -1,0 +1,13 @@
+;
+; Asterisk Call Management support
+;
+
+[general]
+enabled = yes
+port = 5038
+bindaddr = 127.0.0.1
+
+[<%= @node[:asterisk][:manager_username] %>]
+secret=<%= @node[:asterisk][:manager_password] %>
+read = <%= @node[:asterisk][:manager_read_perms].join(",") %>
+write = <%= @node[:asterisk][:manager_write_perms].join(",") %>
