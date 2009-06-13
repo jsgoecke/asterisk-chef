@@ -1,217 +1,63 @@
 [general]
-context=default			; Default context for incoming calls
-;allowguest=no			; Allow or reject guest calls (default is yes)
-allowoverlap=no			; Disable overlap dialing support. (Default is yes)
-;allowtransfer=no		; Disable all transfers (unless enabled in peers or users)
-				; Default is enabled
-;realm=mydomain.tld		; Realm for digest authentication
-				; defaults to "asterisk". If you set a system name in
-				; asterisk.conf, it defaults to that system name
-				; Realms MUST be globally unique according to RFC 3261
-				; Set this to your host name or domain name
-bindport=5060			; UDP Port to bind to (SIP standard port is 5060)
-				; bindport is the local UDP port that Asterisk will listen on
-bindaddr=0.0.0.0		; IP address to bind to (0.0.0.0 binds to all)
-srvlookup=yes			; Enable DNS SRV lookups on outbound calls
-				; Note: Asterisk only uses the first host 
-				; in SRV records
-				; Disabling DNS SRV lookups disables the 
-				; ability to place SIP calls based on domain 
-				; names to some other SIP users on the Internet
-				
-;domain=mydomain.tld		; Set default domain for this host
-				; If configured, Asterisk will only allow
-				; INVITE and REFER to non-local domains
-				; Use "sip show domains" to list local domains
-;pedantic=yes			; Enable checking of tags in headers, 
-				; international character conversions in URIs
-				; and multiline formatted headers for strict
-				; SIP compatibility (defaults to "no")
+context = <%= if @node[:asterisk][:sip_conf_context] { @node[:asterisk][:sip_conf_context] } %>
+allowguest = <%= @node[:asterisk][:sip_conf_allowguest] %>
+allowoverlap = <%= @node[:asterisk][:sip_conf_allowoverlap] %>
+allowtransfer = context = <%= @node[:asterisk][:sip_conf_allowtransfer] %>
+real = context = <%= @node[:asterisk][:sip_conf_realm] %>
+domain = <%= @node[:asterisk][:sip_conf_domain] %>
+bindport = context = <%= @node[:asterisk][:sip_conf_bindport] %>
+bindaddr = context = <%= @node[:asterisk][:sip_conf_bindaddr] %>
+srvlookup = <%= @node[:asterisk][:sip_conf_srvlookup] %>
+pedantic = <%= @node[:asterisk][:sip_conf_pedantic] %>
+tos_sip = <%= @node[:asterisk][:sip_conf_tos_sip] %>
+tos_audio = <%= @node[:asterisk][:sip_conf_tos_audio] %>
+tos_video = <%= @node[:asterisk][:sip_conf_tos_video] %>
+maxexpiry = <%= @node[:asterisk][:sip_conf_maxexpiry] %>
+minexpirey = <%= @node[:asterisk][:sip_conf_minepxiry] %>
+defaultexpiry = <%= @node[:asterisk][:sip_conf_defaultexpiry] %>
+t1min = <%= @node[:asterisk][:sip_conf_t1min] %>
+notifymimetype = <%= @node[:asterisk][:sip_conf_notifymimetype] %>
+checkmwi = <%= @node[:asterisk][:sip_conf_checkmwi] %>
+buggymwi = <%= @node[:asterisk][:sip_conf_buggymwi] %>
+vmexten = <%= @node[:asterisk][:sip_conf_vmexten] %>
+disallow = <%= @node[:asterisk][:sip_conf_disallow] %>
 
-; See doc/ip-tos.txt for a description of these parameters.
-;tos_sip=cs3                    ; Sets TOS for SIP packets.
-;tos_audio=ef                   ; Sets TOS for RTP audio packets.
-;tos_video=af41                 ; Sets TOS for RTP video packets.
+% @node[:asterisk][:sip_conf_allow].each do |allow|
+	allow = <%= allow %>
+% end
 
-;maxexpiry=3600			; Maximum allowed time of incoming registrations
-				; and subscriptions (seconds)
-;minexpiry=60			; Minimum length of registrations/subscriptions (default 60)
-;defaultexpiry=120		; Default length of incoming/outgoing registration
-;t1min=100			; Minimum roundtrip time for messages to monitored hosts
-				; Defaults to 100 ms
-;notifymimetype=text/plain	; Allow overriding of mime type in MWI NOTIFY
-;checkmwi=10			; Default time between mailbox checks for peers
-;buggymwi=no			; Cisco SIP firmware doesn't support the MWI RFC
-				; fully. Enable this option to not get error messages
-				; when sending MWI to phones with this bug.
-;vmexten=voicemail		; dialplan extension to reach mailbox sets the 
-				; Message-Account in the MWI notify message 
-				; defaults to "asterisk"
-;disallow=all			; First disallow all codecs
-;allow=ulaw			; Allow codecs in order of preference
-;allow=ilbc			; see doc/rtp-packetization for framing options
-;
-; This option specifies a preference for which music on hold class this channel
-; should listen to when put on hold if the music class has not been set on the
-; channel with Set(CHANNEL(musicclass)=whatever) in the dialplan, and the peer
-; channel putting this one on hold did not suggest a music class.
-;
-; This option may be specified globally, or on a per-user or per-peer basis.
-;
-;mohinterpret=default
-;
-; This option specifies which music on hold class to suggest to the peer channel
-; when this channel places the peer on hold. It may be specified globally or on
-; a per-user or per-peer basis.
-;
-;mohsuggest=default
-;
-;language=en			; Default language setting for all users/peers
-				; This may also be set for individual users/peers
-;relaxdtmf=yes			; Relax dtmf handling
-;trustrpid = no			; If Remote-Party-ID should be trusted
-;sendrpid = yes			; If Remote-Party-ID should be sent
-;progressinband=never		; If we should generate in-band ringing always
-				; use 'never' to never use in-band signalling, even in cases
-				; where some buggy devices might not render it
-				; Valid values: yes, no, never Default: never
-;useragent=Asterisk PBX		; Allows you to change the user agent string
-;promiscredir = no      	; If yes, allows 302 or REDIR to non-local SIP address
-	                       	; Note that promiscredir when redirects are made to the
-       	                	; local system will cause loops since Asterisk is incapable
-       	                	; of performing a "hairpin" call.
-;usereqphone = no		; If yes, ";user=phone" is added to uri that contains
-				; a valid phone number
-;dtmfmode = rfc2833		; Set default dtmfmode for sending DTMF. Default: rfc2833
-				; Other options: 
-				; info : SIP INFO messages
-				; inband : Inband audio (requires 64 kbit codec -alaw, ulaw)
-				; auto : Use rfc2833 if offered, inband otherwise
+mohinterpret = <%= @node[:asterisk][:sip_conf_mohinterpret] %>
+mohsuggest = <%= @node[:asterisk][:sip_conf_mohsuggest] %>
+language = <%= @node[:asterisk][:sip_conf_lanugage] %>
+relaxdtmf = <%= @node[:asterisk][:sip_conf_relaxdtmf] %>
+trustpid = <%= @node[:asterisk][:sip_conf_trustpid] %>
+sendrpid = <%= @node[:asterisk][:sip_conf_sendrpid] %>
+progressinband = <%= @node[:asterisk][:sip_conf_progressinband] %>
+useragent = <%= @node[:asterisk][:sip_conf_useragent] %>
+promiscredir = <%= @node[:asterisk][:sip_conf_promiscredir] %>
+usereqphone = <%= @node[:asterisk][:sip_conf_usereqphone] %>
+dtmfmode = <%= @node[:asterisk][:sip_conf_dtmfmode] %>
+compactheaders = <%= @node[:asterisk][:sip_conf_compactheaders] %>
+videosupport = <%= @node[:asterisk][:sip_conf_videosupport] %>
+maxcallbitrate = <%= @node[:asterisk][:sip_conf_maxcallbitrate] %>
+callevents = <%= @node[:asterisk][:sip_conf_callevents] %>
+alwaysauthreject = <%= @node[:asterisk][:sip_conf_alwaysauthreject] %>
+g726nonstandard = <%= @node[:asterisk][:sip_conf_g726nonstandard] %>
+matchexterniplocally = <%= @node[:asterisk][:sip_conf_matchexterniplocally] %>
+regcontext = <%= @node[:asterisk][:sip_conf_regcontext] %>
+rtptimeout = <%= @node[:asterisk][:sip_conf_rtptimeout] %>
+rtpholdtimeout = <%= @node[:asterisk][:sip_conf_rtpholdtimeout] %>
+rtpkeepalive = <%= @node[:asterisk][:sip_conf_rtpkeepalive] %>
+sipdebug = <%= @node[:asterisk][:sip_conf_sipdebug] %>
+recordhistory = <%= @node[:asterisk][:sip_conf_recordhistory] %>
+dumphistory = <%= @node[:asterisk][:sip_conf_dumphistory] %>
+allowsubscribe = <%= @node[:asterisk][:sip_conf_allowsubscribe] %>
+subscribecontext = <%= @node[:asterisk][:sip_conf_subscribecontext] %>
+notifyringing = <%= @node[:asterisk][:sip_conf_notifyringing] %>
+notifyhold = <%= @node[:asterisk][:sip_conf_notifyhold] %>
+limitonpeers = <%= @node[:asterisk][:sip_conf_limitonpeers] %>
+t38pt_udptl = <%= @node[:asterisk][:sip_conf_t38pt_udptl] %>
 
-;compactheaders = yes		; send compact sip headers.
-;
-;videosupport=yes		; Turn on support for SIP video. You need to turn this on
-				; in the this section to get any video support at all.
-				; You can turn it off on a per peer basis if the general
-				; video support is enabled, but you can't enable it for
-				; one peer only without enabling in the general section.
-;maxcallbitrate=384		; Maximum bitrate for video calls (default 384 kb/s)
-				; Videosupport and maxcallbitrate is settable
-				; for peers and users as well
-;callevents=no			; generate manager events when sip ua 
-				; performs events (e.g. hold)
-;alwaysauthreject = yes		; When an incoming INVITE or REGISTER is to be rejected,
- 		    		; for any reason, always reject with '401 Unauthorized'
- 				; instead of letting the requester know whether there was
- 				; a matching user or peer for their request
-
-;g726nonstandard = yes		; If the peer negotiates G726-32 audio, use AAL2 packing
-				; order instead of RFC3551 packing order (this is required
-				; for Sipura and Grandstream ATAs, among others). This is
-				; contrary to the RFC3551 specification, the peer _should_
-				; be negotiating AAL2-G726-32 instead :-(
-
-;matchexterniplocally = yes     ; Only substitute the externip or externhost setting if it matches
-                                ; your localnet setting. Unless you have some sort of strange network
-                                ; setup you will not need to enable this.
-
-;
-; If regcontext is specified, Asterisk will dynamically create and destroy a
-; NoOp priority 1 extension for a given peer who registers or unregisters with
-; us and have a "regexten=" configuration item.  
-; Multiple contexts may be specified by separating them with '&'. The 
-; actual extension is the 'regexten' parameter of the registering peer or its
-; name if 'regexten' is not provided.  If more than one context is provided,
-; the context must be specified within regexten by appending the desired
-; context after '@'.  More than one regexten may be supplied if they are 
-; separated by '&'.  Patterns may be used in regexten.
-;
-;regcontext=sipregistrations
-;
-;--------------------------- RTP timers ----------------------------------------------------
-; These timers are currently used for both audio and video streams. The RTP timeouts
-; are only applied to the audio channel.
-; The settings are settable in the global section as well as per device
-;
-;rtptimeout=60			; Terminate call if 60 seconds of no RTP or RTCP activity
-				; on the audio channel
-				; when we're not on hold. This is to be able to hangup
-				; a call in the case of a phone disappearing from the net,
-				; like a powerloss or grandma tripping over a cable.
-;rtpholdtimeout=300		; Terminate call if 300 seconds of no RTP or RTCP activity
-				; on the audio channel
-				; when we're on hold (must be > rtptimeout)
-;rtpkeepalive=<secs>		; Send keepalives in the RTP stream to keep NAT open
-				; (default is off - zero)
-;--------------------------- SIP DEBUGGING ---------------------------------------------------
-;sipdebug = yes			; Turn on SIP debugging by default, from
-				; the moment the channel loads this configuration
-;recordhistory=yes		; Record SIP history by default 
-				; (see sip history / sip no history)
-;dumphistory=yes		; Dump SIP history at end of SIP dialogue
-				; SIP history is output to the DEBUG logging channel
-
-
-;--------------------------- STATUS NOTIFICATIONS (SUBSCRIPTIONS) ----------------------------
-; You can subscribe to the status of extensions with a "hint" priority
-; (See extensions.conf.sample for examples)
-; chan_sip support two major formats for notifications: dialog-info and SIMPLE 
-;
-; You will get more detailed reports (busy etc) if you have a call limit set
-; for a device. When the call limit is filled, we will indicate busy. Note that
-; you need at least 2 in order to be able to do attended transfers.
-;
-; For queues, you will need this level of detail in status reporting, regardless
-; if you use SIP subscriptions. Queues and manager use the same internal interface
-; for reading status information.
-;
-; Note: Subscriptions does not work if you have a realtime dialplan and use the
-; realtime switch.
-;
-;allowsubscribe=no		; Disable support for subscriptions. (Default is yes)
-;subscribecontext = default	; Set a specific context for SUBSCRIBE requests
-				; Useful to limit subscriptions to local extensions
-				; Settable per peer/user also
-;notifyringing = yes		; Notify subscriptions on RINGING state (default: no)
-;notifyhold = yes		; Notify subscriptions on HOLD state (default: no)
-				; Turning on notifyringing and notifyhold will add a lot
-				; more database transactions if you are using realtime.
-;limitonpeers = yes		; Apply call limits on peers only. This will improve 
-				; status notification when you are using type=friend
-				; Inbound calls, that really apply to the user part
-				; of a friend will now be added to and compared with
-				; the peer limit instead of applying two call limits,
-				; one for the peer and one for the user.
-				; "sip show inuse" will only show active calls on 
-				; the peer side of a "type=friend" object if this
-				; setting is turned on.
-
-;----------------------------------------- T.38 FAX PASSTHROUGH SUPPORT -----------------------
-;
-; This setting is available in the [general] section as well as in device configurations.
-; Setting this to yes, enables T.38 fax (UDPTL) passthrough on SIP to SIP calls, provided
-; both parties have T38 support enabled in their Asterisk configuration 
-; This has to be enabled in the general section for all devices to work. You can then
-; disable it on a per device basis. 
-;
-; T.38 faxing only works in SIP to SIP calls, with no local or agent channel being used.
-;
-; t38pt_udptl = yes            ; Default false
-;
-;----------------------------------------- OUTBOUND SIP REGISTRATIONS  ------------------------
-; Asterisk can register as a SIP user agent to a SIP proxy (provider)
-; Format for the register statement is:
-;       register => user[:secret[:authuser]]@host[:port][/extension]
-;
-; If no extension is given, the 's' extension is used. The extension needs to
-; be defined in extensions.conf to be able to accept calls from this SIP proxy
-; (provider).
-;
-; host is either a host name defined in DNS or the name of a section defined
-; below.
-;
-; Examples:
-;
 ;register => 1234:password@mysipprovider.com	
 ;
 ;     This will pass incoming calls to the 's' extension
@@ -498,122 +344,6 @@ externip = <%= @external_ip %>	; Address that we're going to put in outbound SIP
 ;port=80				; The port number we want to connect to on the remote side
 					; Also used as "defaultport" in combination with "defaultip" settings
 
-;------------------------------------------------------------------------------
-; Definitions of locally connected SIP devices
-;
-; type = user	a device that authenticates to us by "from" field to place calls
-; type = peer	a device we place calls to or that calls us and we match by host
-; type = friend two configurations (peer+user) in one
-;
-; For device names, we recommend using only a-z, numerics (0-9) and underscore
-; 
-; For local phones, type=friend works most of the time
-;
-; If you have one-way audio, you probably have NAT problems. 
-; If Asterisk is on a public IP, and the phone is inside of a NAT device
-; you will need to configure nat option for those phones.
-; Also, turn on qualify=yes to keep the nat session open
-
-;[grandstream1]
-;type=friend 			
-;context=from-sip		; Where to start in the dialplan when this phone calls
-;callerid=John Doe <1234>	; Full caller ID, to override the phones config
-				; on incoming calls to Asterisk
-;host=192.168.0.23		; we have a static but private IP address
-				; No registration allowed
-;nat=no				; there is not NAT between phone and Asterisk
-;canreinvite=yes		; allow RTP voice traffic to bypass Asterisk
-;dtmfmode=info			; either RFC2833 or INFO for the BudgeTone
-;call-limit=1			; permit only 1 outgoing call and 1 incoming call at a time
-				; from the phone to asterisk
-				; 1 for the explicit peer, 1 for the explicit user,
-				; remember that a friend equals 1 peer and 1 user in
-				; memory
-				; This will affect your subscriptions as well.
-				; There is no combined call counter for a "friend"
-				; so there's currently no way in sip.conf to limit
-				; to one inbound or outbound call per phone. Use
-				; the group counters in the dial plan for that.
-				;
-;mailbox=1234@default		; mailbox 1234 in voicemail context "default"
-;disallow=all			; need to disallow=all before we can use allow=
-;allow=ulaw			; Note: In user sections the order of codecs
-				; listed with allow= does NOT matter!
-;allow=alaw
-;allow=g723.1			; Asterisk only supports g723.1 pass-thru!
-;allow=g729			; Pass-thru only unless g729 license obtained
-;callingpres=allowed_passed_screen	; Set caller ID presentation
-				; See doc/callingpres.txt for more information
-
-
-;[xlite1]
-; Turn off silence suppression in X-Lite ("Transmit Silence"=YES)!
-; Note that Xlite sends NAT keep-alive packets, so qualify=yes is not needed
-;type=friend
-;regexten=1234			; When they register, create extension 1234
-;callerid="Jane Smith" <5678>
-;host=dynamic			; This device needs to register
-;nat=yes			; X-Lite is behind a NAT router
-;canreinvite=no			; Typically set to NO if behind NAT
-;disallow=all
-;allow=gsm			; GSM consumes far less bandwidth than ulaw
-;allow=ulaw
-;allow=alaw
-;mailbox=1234@default,1233@default	; Subscribe to status of multiple mailboxes
-
-
-;[snom]
-;type=friend			; Friends place calls and receive calls
-;context=from-sip		; Context for incoming calls from this user
-;secret=blah
-;subscribecontext=localextensions	; Only allow SUBSCRIBE for local extensions
-;language=de			; Use German prompts for this user 
-;host=dynamic			; This peer register with us
-;dtmfmode=inband		; Choices are inband, rfc2833, or info
-;defaultip=192.168.0.59		; IP used until peer registers
-;mailbox=1234@context,2345      ; Mailbox(-es) for message waiting indicator
-;subscribemwi=yes		; Only send notifications if this phone 
-				; subscribes for mailbox notification
-;vmexten=voicemail		; dialplan extension to reach mailbox 
-				; sets the Message-Account in the MWI notify message
-				; defaults to global vmexten which defaults to "asterisk"
-;disallow=all
-;allow=ulaw			; dtmfmode=inband only works with ulaw or alaw!
-
-
-;[polycom]
-;type=friend			; Friends place calls and receive calls
-;context=from-sip		; Context for incoming calls from this user
-;secret=blahpoly
-;host=dynamic			; This peer register with us
-;dtmfmode=rfc2833		; Choices are inband, rfc2833, or info
-;username=polly			; Username to use in INVITE until peer registers
-				; Normally you do NOT need to set this parameter
-;disallow=all
-;allow=ulaw                     ; dtmfmode=inband only works with ulaw or alaw!
-;progressinband=no		; Polycom phones don't work properly with "never"
-
-
-;[pingtel]
-;type=friend
-;secret=blah
-;host=dynamic
-;insecure=port			; Allow matching of peer by IP address without 
-				; matching port number
-;insecure=invite		; Do not require authentication of incoming INVITEs
-;insecure=port,invite		; (both)
-;qualify=1000			; Consider it down if it's 1 second to reply
-				; Helps with NAT session
-				; qualify=yes uses default value
-;
-; Call group and Pickup group should be in the range from 0 to 63
-;
-;callgroup=1,3-4		; We are in caller groups 1,3,4
-;pickupgroup=1,3-5		; We can do call pick-p for call group 1,3,4,5
-;defaultip=192.168.0.60		; IP address to use if peer has not registered
-;deny=0.0.0.0/0.0.0.0		; ACL: Control access to this account based on IP address
-;permit=192.168.0.60/255.255.255.0
-
 ;[cisco1]
 ;type=friend
 ;secret=blah
@@ -631,14 +361,3 @@ externip = <%= @external_ip %>	; Address that we're going to put in outbound SIP
 ;username=goran			; Username to use when calling this device before registration
 				; Normally you do NOT need to set this parameter
 ;setvar=CUSTID=5678		; Channel variable to be set for all calls from this device
-
-;[pre14-asterisk]
-;type=friend
-;secret=digium
-;host=dynamic
-;rfc2833compensate=yes		; Compensate for pre-1.4 DTMF transmission from another Asterisk machine.
-				; You must have this turned on or DTMF reception will work improperly.
-;t38pt_usertpsource=yes         ; Use the source IP address of RTP as the destination IP address for UDPTL packets
-                                ; if the nat option is enabled. If a single RTP packet is received Asterisk will know the
-                                ; external IP address of the remote device. If port forwarding is done at the client side
-                                ; then UDPTL will flow to the remote device.
